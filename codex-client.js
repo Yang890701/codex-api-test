@@ -31,40 +31,38 @@ class CodexClient {
 
     async findToken(phrase, networkId = 1) {
         const query = `
-            query($phrase: String!, $networkId: Int!) {
-                filterTokens(
-                    phrase: $phrase
-                    filters: {
-                        networkIds: [$networkId]
-                        minVolume24: 10000
-                        minLiquidityUsd: 5000
-                    }
-                    rankings: [trendingScore24, volume24]
-                    limit: 1
-                ) {
-                    nodes {
-                        id
+            query GetToken($input: SearchTokensInput!) {
+                searchTokens(input: $input) {
+                    address
+                    name
+                    symbol
+                    networkId
+                    topPairs {
                         address
-                        networkId
-                        name
-                        symbol
-                        pairs {
-                            address
-                            liquidity
-                            volume24
+                        liquidity {
+                            usd
+                        }
+                        volume24h {
+                            usd
                         }
                     }
                 }
             }
         `;
 
-        const data = await this.gql(query, { phrase, networkId });
+        const data = await this.gql(query, { 
+            input: {
+                query: phrase,
+                networks: [networkId],
+                limit: 1
+            }
+        });
         
-        if (!data.filterTokens.nodes.length) {
+        if (!data.searchTokens || !data.searchTokens.length) {
             throw new Error('未找到代幣');
         }
 
-        return data.filterTokens.nodes[0];
+        return data.searchTokens[0];
     }
 
     async getTokenEvents(pairAddress, networkId, minUsd, from, to) {

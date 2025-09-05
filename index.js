@@ -105,12 +105,12 @@ app.get('/api/traders', async (req, res) => {
         // 1. 找到代幣
         const tokenInfo = await codexClient.findToken(token, parseInt(network));
         
-        if (!tokenInfo.pairs || tokenInfo.pairs.length === 0) {
+        if (!tokenInfo.topPairs || tokenInfo.topPairs.length === 0) {
             return res.json({ success: false, message: '未找到交易對' });
         }
         
         // 2. 選擇最大流動性的交易對
-        const mainPair = tokenInfo.pairs.sort((a, b) => b.liquidity - a.liquidity)[0];
+        const mainPair = tokenInfo.topPairs.sort((a, b) => (b.liquidity?.usd || 0) - (a.liquidity?.usd || 0))[0];
         
         // 3. 查詢過去24小時的交易
         const now = Math.floor(Date.now() / 1000);
