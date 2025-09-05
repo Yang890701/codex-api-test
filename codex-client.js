@@ -3,7 +3,7 @@ const axios = require('axios');
 class CodexClient {
     constructor(apiKey) {
         this.apiKey = apiKey;
-        this.baseURL = 'https://api.codex.io/graphql';
+        this.baseURL = 'https://graph.defined.fi/graphql';
     }
 
     async gql(query, variables = {}) {
