@@ -1,8 +1,10 @@
 require('dotenv').config();
 const express = require('express');
 const CodexClient = require('./codex-client');
+const healthRouter = require('./health');
 
 const app = express();
+app.use(healthRouter);
 const PORT = process.env.PORT || 3000;
 const codexClient = new CodexClient(process.env.CODEX_API_KEY);
 
@@ -139,8 +141,9 @@ app.get('/api/traders', async (req, res) => {
     }
 });
 
-app.listen(PORT, () => {
+app.listen(PORT, '0.0.0.0', () => {
     console.log(`🌐 Server running on port ${PORT}`);
+    console.log(`🔑 Codex API Key: ${process.env.CODEX_API_KEY ? 'Set' : 'Not Set'}`);
 });
 
 module.exports = app;
